@@ -1,0 +1,14 @@
+:host { display: block; }
+.auth-page { display: grid; min-height: 100vh; place-items: center; padding: 1.25rem; box-sizing: border-box; background: #f2efe8; color: #19252b; font-family: Arial, sans-serif; }
+.auth-card { width: min(100%, 420px); padding: 2rem; box-sizing: border-box; background: #fffdf8; box-shadow: 0 18px 45px rgb(25 37 43 / 12%); }
+.back-link { color: #a5482b; font-family: Georgia, 'Times New Roman', serif; font-weight: 700; text-decoration: none; }
+h1 { margin: 2rem 0 0.5rem; font-family: Georgia, 'Times New Roman', serif; font-size: 2.6rem; }
+.auth-card > p { color: #617078; }
+form { display: grid; gap: 0.6rem; margin-top: 1.5rem; }
+label { margin-top: 0.45rem; color: #617078; font-size: 0.8rem; font-weight: 700; }
+input { padding: 0.8rem; border: 1px solid #cbd2ce; font-size: 1rem; }
+button { margin-top: 0.75rem; padding: 0.85rem; border: 0; background: #19252b; color: #fffdf8; cursor: pointer; font-weight: 700; }
+button:disabled { cursor: wait; opacity: 0.6; }
+.message { color: #a5482b !important; }
+.switch-auth { margin-top: 1.5rem; font-size: 0.9rem; }
+.switch-auth a { color: #a5482b; font-weight: 700; }

@@ -1,0 +1,18 @@
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="register-title">
+    <a routerLink="/" class="back-link">MoreFilms</a>
+    <h1 id="register-title">Crear cuenta</h1>
+    <p>Únete a la conversación cinéfila.</p>
+    <form (ngSubmit)="onSubmit()">
+      <label for="username">Usuario</label>
+      <input id="username" name="username" type="text" [(ngModel)]="usuario.username" autocomplete="username" required />
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" [(ngModel)]="usuario.email" autocomplete="email" required />
+      <label for="password">Contraseña</label>
+      <input id="password" name="password" type="password" [(ngModel)]="usuario.password" autocomplete="new-password" required />
+      <button type="submit" [disabled]="enviando">{{ enviando ? 'Creando cuenta...' : 'Registrarse' }}</button>
+    </form>
+    <p class="message" role="alert" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="switch-auth">¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a></p>
+  </section>
+</main>

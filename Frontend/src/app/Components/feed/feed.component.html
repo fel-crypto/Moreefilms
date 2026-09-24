@@ -1,0 +1,41 @@
+<main class="feed-page">
+  <header class="feed-header">
+    <p class="eyebrow">MoreFilms</p>
+    <h1>Tu feed de cine</h1>
+    <p>Comparte una película y conversa con la comunidad.</p>
+  </header>
+  <section class="publish-panel" aria-labelledby="publish-title">
+    <h2 id="publish-title">Nueva publicación</h2>
+    <form (ngSubmit)="publicar()">
+      <label for="pelicula">Película</label>
+      <input id="pelicula" name="pelicula" type="text" [(ngModel)]="nuevoPost.pelicula" placeholder="Ej. Interstellar" />
+      <label for="contenido">Comentario</label>
+      <textarea id="contenido" name="contenido" [(ngModel)]="nuevoPost.contenido" rows="4" required placeholder="¿Qué opinas de esta película?"></textarea>
+      <button type="submit">Publicar</button>
+    </form>
+  </section>
+  <p class="status" role="status" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="status" role="status" *ngIf="cargando">Cargando publicaciones...</p>
+  <section class="posts" aria-labelledby="posts-title">
+    <h2 id="posts-title">Publicaciones recientes</h2>
+    <p class="empty" *ngIf="!cargando && publicaciones.length === 0">Todavía no hay publicaciones.</p>
+    <article class="post-card" *ngFor="let post of publicaciones">
+      <div class="post-card__heading">
+        <div><h3>{{ post.pelicula || 'Recomendación de película' }}</h3><p class="author">Por {{ post.autor }}</p></div>
+        <div class="post-actions" *ngIf="post.autor === usuarioActual">
+          <button type="button" class="edit-button" (click)="editar(post)">Editar</button>
+          <button type="button" class="delete-button" (click)="borrar(post._id)">Eliminar</button>
+        </div>
+      </div>
+      <p>{{ post.contenido }}</p>
+      <section class="comments" aria-label="Comentarios">
+        <h4>Comentarios</h4>
+        <p class="comment" *ngFor="let comentario of post.comentarios"><strong>{{ comentario.autor }}</strong>: {{ comentario.texto }}</p>
+        <form class="comment-form" (ngSubmit)="comentar(post._id)">
+          <input [id]="'comentario-' + post._id" [name]="'comentario-' + post._id" type="text" [(ngModel)]="nuevosComentarios[post._id || '']" placeholder="Escribe un comentario" required />
+          <button type="submit">Comentar</button>
+        </form>
+      </section>
+    </article>
+  </section>
+</main>
