@@ -258,6 +258,20 @@ async function connectToMongo() {
   await mongoConnectionPromise;
 }
 
+async function vercelHandler(req, res) {
+  if (req.url === '/' || req.url === '/api') {
+    return app(req, res);
+  }
+
+  try {
+    await connectToMongo();
+    return app(req, res);
+  } catch (error) {
+    console.error('No se pudo conectar a MongoDB:', error.name);
+    return res.status(503).json({ message: 'No se pudo conectar a la base de datos' });
+  }
+}
+
 async function startServer() {
   try {
     if (!urlMongo) {
@@ -284,4 +298,6 @@ if (require.main === module) {
   startServer();
 }
 
-module.exports = { app, connectToMongo };
+module.exports = vercelHandler;
+module.exports.app = app;
+module.exports.connectToMongo = connectToMongo;
