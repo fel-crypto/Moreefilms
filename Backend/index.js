@@ -1,12 +1,15 @@
-/*/
-const express = require('express');
-const app = express();
-const port = 3003;
+const { app, connectToMongo } = require('./server');
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
+module.exports = async (req, res) => {
+  if (req.url === '/' || req.url === '/api') {
+    return app(req, res);
+  }
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+  try {
+    await connectToMongo();
+    return app(req, res);
+  } catch (error) {
+    console.error('No se pudo conectar a MongoDB:', error.name);
+    return res.status(503).json({ message: 'No se pudo conectar a la base de datos' });
+  }
+};
