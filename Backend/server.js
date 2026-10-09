@@ -95,11 +95,17 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, username, password } = req.body;
-    if (!password || (!email && !username)) {
+    const identifier = (email || username || '').trim();
+    if (!password || !identifier) {
       return res.status(400).json({ message: 'Debes enviar usuario o email y password' });
     }
 
-    const user = await User.findOne(email ? { email } : { username });
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase() },
+        { username: identifier },
+      ],
+    });
 
     if (!user || !(await verifyPassword(password, user.password))) {
       return res.status(401).json({ message: 'Credenciales incorrectas' });
