@@ -57,8 +57,27 @@ async function verifyPassword(password, storedPassword) {
   return crypto.timingSafeEqual(Buffer.from(storedKey, 'hex'), derivedKey);
 }
 
-// Ruta de comprobación para saber si la API está activa.
-app.get('/', (req, res) => {
+// Muestra las publicaciones guardadas para verificar los datos desde el navegador.
+app.get('/', async (req, res) => {
+  try {
+    const [posts, users] = await Promise.all([
+      Post.find().sort({ fecha: -1 }),
+      User.find().select('username email -_id').lean(),
+    ]);
+    return res.json({
+      message: 'MoreFilms API conectada a MongoDB',
+      totalPublicaciones: posts.length,
+      publicaciones: posts,
+      totalUsuarios: users.length,
+      usuarios: users,
+    });
+  } catch (error) {
+    console.error('No se pudieron cargar los datos de MongoDB:', error.name);
+    return res.status(500).json({ message: 'No se pudieron cargar los datos de MongoDB' });
+  }
+});
+
+app.get('/health', (req, res) => {
   res.json({ message: 'MoreFilms API activa' });
 });
 
@@ -265,7 +284,7 @@ async function connectToMongo() {
 }
 
 async function vercelHandler(req, res) {
-  if (req.url === '/' || req.url === '/api') {
+  if (req.url === '/api' || req.url === '/health') {
     return app(req, res);
   }
 

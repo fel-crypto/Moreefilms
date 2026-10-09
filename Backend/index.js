@@ -1,7 +1,7 @@
 const { app, connectToMongo } = require('./server');
 
 module.exports = async (req, res) => {
-  if (req.url === '/' || req.url === '/api') {
+  if (req.url === '/api' || req.url === '/health') {
     return app(req, res);
   }
 
