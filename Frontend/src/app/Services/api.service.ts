@@ -32,7 +32,9 @@ export interface Comentario {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3003/api';
+  private readonly apiUrl = window.location.hostname === 'localhost'
+    ? 'http://localhost:3003/api'
+    : 'https://moreefilms.vercel.app/api';
 
   registrar(usuario: UsuarioRegistro): Observable<unknown> {
     return this.http.post(`${this.apiUrl}/auth/register`, usuario);
