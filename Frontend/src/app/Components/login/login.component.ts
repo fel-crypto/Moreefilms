@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -8,6 +8,7 @@ import { ApiService, CredencialesLogin } from '../../Services/api.service';
 export class LoginComponent {
   private readonly apiService = inject(ApiService);
   private readonly router = inject(Router);
+  private readonly changeDetector = inject(ChangeDetectorRef);
   credenciales: CredencialesLogin = { username: '', password: '' };
   mensaje = '';
   enviando = false;
@@ -18,7 +19,11 @@ export class LoginComponent {
     this.mensaje = '';
     this.apiService.login(this.credenciales).subscribe({
       next: (respuesta) => { localStorage.setItem('morefilms_user', JSON.stringify(respuesta)); this.router.navigate(['/feed']); },
-      error: (error) => { this.enviando = false; this.mensaje = error.status === 401 ? 'El usuario o la contraseña no son correctos.' : 'No se pudo iniciar sesión.'; },
+      error: (error) => {
+        this.enviando = false;
+        this.mensaje = error.status === 401 ? 'El usuario o la contraseña no son correctos.' : 'No se pudo iniciar sesión.';
+        this.changeDetector.detectChanges();
+      },
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -8,6 +8,7 @@ import { ApiService, UsuarioRegistro } from '../../Services/api.service';
 export class RegisterComponent {
   private readonly apiService = inject(ApiService);
   private readonly router = inject(Router);
+  private readonly changeDetector = inject(ChangeDetectorRef);
   usuario: UsuarioRegistro = { username: '', email: '', password: '' };
   mensaje = '';
   enviando = false;
@@ -18,7 +19,11 @@ export class RegisterComponent {
     this.mensaje = '';
     this.apiService.registrar(this.usuario).subscribe({
       next: () => { this.router.navigate(['/login']); },
-      error: (error) => { this.enviando = false; this.mensaje = error.status === 409 ? 'El usuario o email ya está registrado.' : 'No se pudo crear la cuenta.'; },
+      error: (error) => {
+        this.enviando = false;
+        this.mensaje = error.status === 409 ? 'El usuario o email ya está registrado.' : 'No se pudo crear la cuenta.';
+        this.changeDetector.detectChanges();
+      },
     });
   }
 }

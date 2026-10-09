@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Publicacion } from '../../Services/api.service';
@@ -12,6 +12,7 @@ import { ApiService, Publicacion } from '../../Services/api.service';
 })
 export class FeedComponent implements OnInit {
   private readonly apiService = inject(ApiService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   usuarioActual = this.obtenerUsuarioActual();
   publicaciones: Publicacion[] = [];
@@ -33,8 +34,16 @@ export class FeedComponent implements OnInit {
   cargarFeed(): void {
     this.cargando = true;
     this.apiService.obtenerPosts().subscribe({
-      next: (posts) => { this.publicaciones = posts; this.cargando = false; },
-      error: () => { this.mensaje = 'No se pudo cargar el feed.'; this.cargando = false; },
+      next: (posts) => {
+        this.publicaciones = posts;
+        this.cargando = false;
+        this.changeDetector.detectChanges();
+      },
+      error: () => {
+        this.mensaje = 'No se pudo cargar el feed.';
+        this.cargando = false;
+        this.changeDetector.detectChanges();
+      },
     });
   }
 
@@ -42,15 +51,24 @@ export class FeedComponent implements OnInit {
     if (!this.nuevoPost.contenido.trim()) { this.mensaje = 'Escribe un contenido antes de publicar.'; return; }
     this.apiService.crearPost(this.nuevoPost).subscribe({
       next: () => { this.nuevoPost = { autor: this.usuarioActual, contenido: '', pelicula: '' }; this.mensaje = ''; this.cargarFeed(); },
-      error: () => { this.mensaje = 'No se pudo crear la publicación.'; },
+      error: () => {
+        this.mensaje = 'No se pudo crear la publicación.';
+        this.changeDetector.detectChanges();
+      },
     });
   }
 
   borrar(id: string | undefined): void {
     if (!id || !this.usuarioActual || !window.confirm('¿Quieres eliminar esta publicación?')) return;
     this.apiService.eliminarPost(id, this.usuarioActual).subscribe({
-      next: () => { this.publicaciones = this.publicaciones.filter((post) => post._id !== id); },
-      error: (error) => { this.mensaje = error.status === 403 ? 'No tienes permiso para eliminar esta publicación.' : 'No se pudo eliminar la publicación.'; },
+      next: () => {
+        this.publicaciones = this.publicaciones.filter((post) => post._id !== id);
+        this.changeDetector.detectChanges();
+      },
+      error: (error) => {
+        this.mensaje = error.status === 403 ? 'No tienes permiso para eliminar esta publicación.' : 'No se pudo eliminar la publicación.';
+        this.changeDetector.detectChanges();
+      },
     });
   }
 
@@ -62,7 +80,10 @@ export class FeedComponent implements OnInit {
     if (pelicula === null) return;
     this.apiService.actualizarPost(post._id, { autor: this.usuarioActual, contenido: contenido.trim(), pelicula: pelicula.trim() }).subscribe({
       next: () => this.cargarFeed(),
-      error: (error) => { this.mensaje = error.status === 403 ? 'No tienes permiso para editar esta publicación.' : 'No se pudo actualizar la publicación.'; },
+      error: (error) => {
+        this.mensaje = error.status === 403 ? 'No tienes permiso para editar esta publicación.' : 'No se pudo actualizar la publicación.';
+        this.changeDetector.detectChanges();
+      },
     });
   }
 
@@ -71,7 +92,10 @@ export class FeedComponent implements OnInit {
     if (!postId || !texto) return;
     this.apiService.agregarComentario(postId, { autor: this.usuarioActual, texto }).subscribe({
       next: () => { this.nuevosComentarios[postId] = ''; this.cargarFeed(); },
-      error: () => { this.mensaje = 'No se pudo agregar el comentario.'; },
+      error: () => {
+        this.mensaje = 'No se pudo agregar el comentario.';
+        this.changeDetector.markForCheck();
+      },
     });
   }
 }
