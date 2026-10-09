@@ -1,0 +1,84 @@
+{
+  "hash": "b4468cdd",
+  "configHash": "35627c5c",
+  "lockfileHash": "2c873954",
+  "browserHash": "4ba0c3df",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "5d98861c",
+      "needsInterop": false
+    },
+    "@angular/common/http": {
+      "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+      "fileHash": "1dd59d30",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "6e9fe98e",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "53a55264",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "97890ca2",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "2a0aeb8a",
+      "needsInterop": false
+    },
+    "zone.js": {
+      "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
+      "file": "zone__js.js",
+      "fileHash": "d706dc5c",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "_xhr-chunk-DrUX5czT": {
+      "file": "_xhr-chunk-DrUX5czT.js",
+      "isDynamicEntry": false
+    },
+    "common-CGzztZtv": {
+      "file": "common-CGzztZtv.js",
+      "isDynamicEntry": false
+    },
+    "core-tMO5zefu": {
+      "file": "core-tMO5zefu.js",
+      "isDynamicEntry": false
+    },
+    "createObject-DedyyFC2": {
+      "file": "createObject-DedyyFC2.js",
+      "isDynamicEntry": false
+    },
+    "from-CUq-E4cd": {
+      "file": "from-CUq-E4cd.js",
+      "isDynamicEntry": false
+    },
+    "http-B5SaKbi9": {
+      "file": "http-B5SaKbi9.js",
+      "isDynamicEntry": false
+    },
+    "objectSpread2-C_IE-bIJ": {
+      "file": "objectSpread2-C_IE-bIJ.js",
+      "isDynamicEntry": false
+    },
+    "platform-browser-BFtO0JVq": {
+      "file": "platform-browser-BFtO0JVq.js",
+      "isDynamicEntry": false
+    }
+  }
+}

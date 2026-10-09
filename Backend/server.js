@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const path = require('path');
 const { promisify } = require('util');
+const dotenv = require('dotenv');
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const port = process.env.PORT || 3003;
-const mongoUri = 'mongodb://localhost:27017/morefilms';
+const urlMongo = process.env.MONGO_URI;
 const scryptAsync = promisify(crypto.scrypt);
 
 // Middlewares disponibles para las peticiones del frontend.
@@ -222,11 +226,25 @@ app.post('/api/posts/:id/comentarios', async (req, res) => {
   }
 });
 
-// Conecta primero con MongoDB y después empieza a aceptar peticiones.
+// Omite MongoDB local temporalmente y conecta con la URI configurada en .env.
 async function startServer() {
   try {
-    await mongoose.connect(mongoUri);
-    console.log('Conectado a MongoDB');
+    if (!urlMongo) {
+      throw new Error('Falta configurar MONGO_URI en Backend/.env');
+    }
+
+    const authorityMatch = urlMongo.match(/^mongodb(?:\+srv)?:\/\/(?:[^@/]+@)?([^/?]+)/i);
+    const mongoHosts = authorityMatch ? authorityMatch[1].split(',') : [];
+    const isLocalMongo = mongoHosts.some((host) =>
+      /^(?:localhost|127(?:\.\d{1,3}){3}|\[::1\])(?::\d+)?$/i.test(host)
+    );
+
+    if (isLocalMongo) {
+      console.log('Conexión local a MongoDB suspendida temporalmente');
+    } else {
+      await mongoose.connect(urlMongo);
+      console.log('Conectado a MongoDB');
+    }
 
     app.listen(port, () => {
       console.log(`MoreFilms API disponible en http://localhost:${port}`);
