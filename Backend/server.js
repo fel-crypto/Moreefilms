@@ -12,6 +12,7 @@ const app = express();
 const port = process.env.PORT || 3003;
 const urlMongo = process.env.MONGO_URI;
 const scryptAsync = promisify(crypto.scrypt);
+let mongoConnectionPromise;
 
 // Middlewares disponibles para las peticiones del frontend.
 app.use(cors());
@@ -58,6 +59,10 @@ async function verifyPassword(password, storedPassword) {
 
 // Ruta de comprobación para saber si la API está activa.
 app.get('/', (req, res) => {
+  res.json({ message: 'MoreFilms API activa' });
+});
+
+app.get('/api', (req, res) => {
   res.json({ message: 'MoreFilms API activa' });
 });
 
@@ -226,23 +231,43 @@ app.post('/api/posts/:id/comentarios', async (req, res) => {
   }
 });
 
-// Omite MongoDB local temporalmente y conecta con la URI configurada en .env.
+function isLocalMongoUri(uri) {
+  const authorityMatch = uri.match(/^mongodb(?:\+srv)?:\/\/(?:[^@/]+@)?([^/?]+)/i);
+  const mongoHosts = authorityMatch ? authorityMatch[1].split(',') : [];
+  return mongoHosts.some((host) =>
+    /^(?:localhost|127(?:\.\d{1,3}){3}|\[::1\])(?::\d+)?$/i.test(host)
+  );
+}
+
+async function connectToMongo() {
+  if (!urlMongo) {
+    throw new Error('Falta configurar MONGO_URI');
+  }
+
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+
+  if (!mongoConnectionPromise) {
+    mongoConnectionPromise = mongoose.connect(urlMongo).catch((error) => {
+      mongoConnectionPromise = undefined;
+      throw error;
+    });
+  }
+
+  await mongoConnectionPromise;
+}
+
 async function startServer() {
   try {
     if (!urlMongo) {
       throw new Error('Falta configurar MONGO_URI en Backend/.env');
     }
 
-    const authorityMatch = urlMongo.match(/^mongodb(?:\+srv)?:\/\/(?:[^@/]+@)?([^/?]+)/i);
-    const mongoHosts = authorityMatch ? authorityMatch[1].split(',') : [];
-    const isLocalMongo = mongoHosts.some((host) =>
-      /^(?:localhost|127(?:\.\d{1,3}){3}|\[::1\])(?::\d+)?$/i.test(host)
-    );
-
-    if (isLocalMongo) {
+    if (isLocalMongoUri(urlMongo)) {
       console.log('Conexión local a MongoDB suspendida temporalmente');
     } else {
-      await mongoose.connect(urlMongo);
+      await connectToMongo();
       console.log('Conectado a MongoDB');
     }
 
@@ -255,4 +280,8 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, connectToMongo };
